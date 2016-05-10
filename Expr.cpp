@@ -4,11 +4,16 @@ Implements the Expression class of a Lisp Interpreter. */
 
 #include "Expr.h"
 
-namespace Expr {
+namespace Expression {
   void Expr::simplify() {
     switch(T) {
-      case INT: return;
-      default:  left->simplify();
+      case INT_EX: return;
+      case UMINUS_EX: if (right == nullptr) throw Bad_Expr();
+                right->simplify();
+                val = -right->value(); delete right;
+                return;
+      default:  if (right == nullptr || left == nullptr) throw Bad_Expr();
+                left->simplify();
                 val = left->value(); delete left;
                 right->simplify();
                 break;
