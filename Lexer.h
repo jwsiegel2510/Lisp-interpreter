@@ -15,19 +15,19 @@ namespace Lexer {
   using std::string;
   using std::istream;
 
-  istream* input;
+  extern istream* input;
 
   namespace enumerations {
-    enum Token {INT_T, PLUS_T = '+', TIMES_T = '*', MINUS_T = '-', DIV_T = '/', MOD_T = '%', LPAREN_T = '(', RPAREN_T = ')', COLON_T = ';', END_T};
+    enum Token {INT_T, END_T, POW_T, VAR_T, DEF_T, LAMBDA_T, PLUS_T = '+', TIMES_T = '*', MINUS_T = '-', DIV_T = '/', MOD_T = '%', LPAREN_T = '(', RPAREN_T = ')'};
   }
   using namespace enumerations;
 
-  long current_int;
-  string current_string;
+  extern long current_int;
+  extern string current_string;
 
   class Bad_Token {}; // used for throwing exceptions.
 
-  Token curr_tok;
+  extern Token curr_tok;
 
   Token getToken();
 }

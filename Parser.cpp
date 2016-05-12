@@ -3,49 +3,38 @@
 Implements the parser for a simple Lisp Interpreter. */
 
 #include "Parser.h"
+#include <stdio.h>
 
 namespace Parser {
 
   Expr* expr(bool b) {
     if (b) getToken();
-    Expr* out;
     switch(curr_tok) {
-      case LPAREN_T:
-        switch(getToken()) {
-          case '+':
-            out = new Expr(PLUS_EX); break;
-          case '*':
-            out = new Expr(TIMES_EX); break;
-          case '-':
-            out = new Expr(MINUS_EX); break;
-          case '/':
-            out = new Expr(DIV_EX); break;
-          case '%':
-            out = new Expr(MOD_EX); break;
-          case INT_T:
-            out = new Expr(current_int);
-            if (getToken() != RPAREN_T) throw ParseError();
-            return out;
-          case LPAREN_T:
-            out = expr(false);
-            if (getToken() != RPAREN_T) throw ParseError();
-        }
-        switch(curr_tok) {
-          case '+': case '*': case '/': case '%':
-            out->setLeft(expr(true)); out->setRight(expr(true));
-            if (getToken() != RPAREN_T) throw ParseError();
-            return out;
-          case '-':
-            out->setLeft(expr(true));
-            if (getToken() == RPAREN_T) {out->setType(UMINUS_EX); return out;}
-            out->setRight(expr(false));
-            if (getToken() != RPAREN_T) throw ParseError();
-            return out;
-        }
+      case LPAREN_T: {
+        List_Expr* out = new List_Expr;
+        while (getToken() != RPAREN_T) {
+          out->getElements().push_back(expr(false));
+        } return out;
+      }
+      case '+': return new Op_Expr(PLUS_OP);
+      case '-': return new Op_Expr(MINUS_OP);
+      case '*': return new Op_Expr(TIMES_OP);
+      case '/': return new Op_Expr(DIV_OP);
+      case '%': return new Op_Expr(MOD_OP);
+      case POW_T: return new Op_Expr(POW_OP);
+      case DEF_T: return new Op_Expr(DEF_OP);
+      case VAR_T: return new Var_Expr(current_string);
+      case LAMBDA_T: {
+        if (getToken() != LPAREN_T) throw ParseError();
+        if (getToken() != VAR_T) throw ParseError();
+        std::string var = current_string;
+        if (getToken() != RPAREN_T) throw ParseError();
+        return new Lambda_Expr(var, expr(true));
+      }
       case INT_T:
-        out = new Expr(current_int); return out;
+        return new Int_Expr(current_int);
       default:
-        throw ParseError();
+         throw ParseError();
     }
   }
 

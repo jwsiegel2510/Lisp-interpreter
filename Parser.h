@@ -15,6 +15,11 @@ namespace Parser {
   using Lexer::getToken;
 
   using Expression::Expr;
+  using Expression::Int_Expr;
+  using Expression::Var_Expr;
+  using Expression::Lambda_Expr;
+  using Expression::List_Expr;
+  using Expression::Op_Expr;  
   using namespace Expression::enumerations;
 
   class ParseError {}; // used for throwing exceptions
