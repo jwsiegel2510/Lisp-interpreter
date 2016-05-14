@@ -20,7 +20,7 @@ namespace Expression {
   using std::ostream;
 
   namespace enumerations {
-    enum op_type {POW_OP, DEF_OP, PLUS_OP = '+', TIMES_OP = '*', MINUS_OP = '-', DIV_OP = '/', MOD_OP = '%'};
+    enum op_type {POW_OP, DEF_OP, CAR_OP, CDR_OP, CONS_OP, CONC_OP, IF_OP, LESS_OP = '<', EQ_OP = '=', GT_OP = '>', PLUS_OP = '+', TIMES_OP = '*', MINUS_OP = '-', DIV_OP = '/', MOD_OP = '%'};
   }
   using namespace enumerations;
 
@@ -35,9 +35,13 @@ namespace Expression {
     virtual bool is_op() = 0;
     virtual bool is_var() = 0;
     virtual bool is_lambda() = 0;
+    virtual bool is_list() = 0;
   };
 
   extern unordered_map<string,stack<Expr*> > var_table;
+  extern unordered_map<string,bool> forced_eval;
+
+  void del_variables();
 
   class Op_Expr : public Expr {
   private:
@@ -55,6 +59,7 @@ namespace Expression {
     virtual bool is_op() {return true;}
     virtual bool is_var() {return false;}
     virtual bool is_lambda() {return false;}
+    virtual bool is_list() {return false;}
   };
 
   class Int_Expr : public Expr {
@@ -73,6 +78,7 @@ namespace Expression {
     virtual bool is_op() {return false;}
     virtual bool is_var() {return false;}
     virtual bool is_lambda() {return false;}
+    virtual bool is_list() {return false;}
   };
 
   class Var_Expr : public Expr {
@@ -91,6 +97,7 @@ namespace Expression {
     virtual bool is_op() {return false;}
     virtual bool is_var() {return true;}
     virtual bool is_lambda() {return false;}
+    virtual bool is_list() {return false;}
   };
 
   class Lambda_Expr : public Expr {
@@ -112,6 +119,7 @@ namespace Expression {
     virtual bool is_op() {return false;}
     virtual bool is_var() {return false;}
     virtual bool is_lambda() {return true;}
+    virtual bool is_list() {return false;}
   };
 
   class List_Expr : public Expr {
@@ -129,6 +137,7 @@ namespace Expression {
     virtual bool is_op() {return false;}
     virtual bool is_var() {return false;}
     virtual bool is_lambda() {return false;}
+    virtual bool is_list() {return true;}
   };
 
   Expr* reduce(Expr*); // reduces an expression according to the rules given by the operators.

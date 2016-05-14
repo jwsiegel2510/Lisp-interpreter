@@ -18,10 +18,29 @@ using Parser::expr;
 int main() {
   std::cout << ">>> ";
   input = &std::cin;
-  while (*input) {
-    Expr* expression = expr(true);
-    expression = eval(expression);
-    std::cout << expression << "\n" << ">>> ";
-    delete expression;
+  bool not_exit = true;
+  while (*input && not_exit) {
+      try {
+      Expr* expression = expr(true);
+      expression = eval(expression);
+      std::cout << expression << "\n" << ">>> ";
+      delete expression;
+    }
+    catch(Expression::Bad_Expr e) {
+      printf("Dude, your expression isn't valid.");
+      std::cout << "\n" << ">>> ";
+    }
+    catch (Lexer::Bad_Token e) {
+      printf("C'mon you've gotta give my lexer something it can work with.");
+      std::cout << "\n" << ">>> ";
+    }
+    catch (Parser::ParseError e) {
+      printf("I can't quite seem to parse that ... please try again.");
+      std::cout << "\n" << ">>> ";
+    }
+    catch (Lexer::Exit_Interpreter e) {
+      not_exit = false;
+    }
   }
+  Expression::del_variables();
 }
